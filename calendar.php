@@ -1456,7 +1456,16 @@ if($mybb->input['action'] == "event")
 		$user_usergroup = $groupscache[1];
 	}
 
-	$titles_cache = $cache->read("usertitles");
+	if(!is_array($titles_cache))
+	{
+		// Get user titles (i guess we should improve this, maybe in version3.
+		$query = $db->simple_select("usertitles", "*", "", array('order_by' => 'posts', 'order_dir' => 'DESC'));
+		while($usertitle = $db->fetch_array($query))
+		{
+			$titles_cache[$usertitle['posts']] = $usertitle;
+		}
+		unset($usertitle);
+	}
 
 	// Event made by registered user
 	if($event['uid'] > 0 && $event['username'])
